@@ -328,7 +328,7 @@ app.get('/', (req, res) => {
   return res.sendFile(path.join(__dirname, 'pages', 'home.html'));
 });
 
-app.get('/zoom', (req, res) => {
+app.get('/zoom/:zoomId', (req, res) => {
   return res.sendFile(path.join(__dirname, 'pages', 'zoom.html'));
 });
 
