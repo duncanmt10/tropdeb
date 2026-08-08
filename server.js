@@ -345,7 +345,7 @@ app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
 
 // ======= Routes =======
 app.get('/', (req, res) => {
-  return res.sendFile(path.join(__dirname, 'pages', 'home.html'));
+  return res.sendFile(path.join(__dirname, 'pages', 'index.html'));
 });
 
 app.get('/zoom/:zoomId', (req, res) => {
@@ -398,7 +398,7 @@ app.use((err, req, res, next) => {
 });
 
 // ======= Start server =======
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0",() => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
    try { log('info', { event: 'server_started', port: PORT }); } catch {}
 });
