@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 // express_protected_server_with_telegram_logging.js
 const express = require('express');
 const app = express();
@@ -5,7 +7,6 @@ const path = require('path');
 const helmet = require('helmet');
 const geoip = require('geoip-lite');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
 
 // const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
 
