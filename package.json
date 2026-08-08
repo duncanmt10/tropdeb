@@ -12,23 +12,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
     "geoip-lite": "^1.4.10",
     "helmet": "^8.1.0",
     "request-ip": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stevengeorge2750-lang/procurement.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/stevengeorge2750-lang/procurement/issues"
-  },
-  "homepage": "https://github.com/stevengeorge2750-lang/procurement#readme"
+  }
 }
