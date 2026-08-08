@@ -10,7 +10,7 @@ require('dotenv').config();
 // const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
 
 // ======= Config / Env =======
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.PORT || 3000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 const TARGET_COUNTRY = process.env.TARGET_COUNTRY || ''; // e.g., 'US'
