@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const helmet = require('helmet');
-const geoip = require('geoip-lite');
+// const geoip = require('geoip-lite');
 const rateLimit = require('express-rate-limit');
 
 // const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
