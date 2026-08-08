@@ -277,17 +277,17 @@ app.use((req, res, next) => {
   }
 
   // Geolocation filter
-  if (!isTargetCountry(req)) {
-    log('warn', { event: 'geo_blocked', ip, path });
-    return res.status(200).send(`<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Access Restricted</title></head>
-<body>
-  <h1>Access Restricted</h1>
-  <p>This content is not available in your region.</p>
-</body>
-</html>`);
-  }
+//   if (!isTargetCountry(req)) {
+//     log('warn', { event: 'geo_blocked', ip, path });
+//     return res.status(200).send(`<!DOCTYPE html>
+// <html>
+// <head><meta charset="utf-8"><title>Access Restricted</title></head>
+// <body>
+//   <h1>Access Restricted</h1>
+//   <p>This content is not available in your region.</p>
+// </body>
+// </html>`);
+//   }
 
   next();
 });
