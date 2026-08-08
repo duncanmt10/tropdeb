@@ -7,7 +7,7 @@ const geoip = require('geoip-lite');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
-const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
+// const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
 
 // ======= Config / Env =======
 const PORT = process.env.PORT || 3007;
@@ -230,7 +230,7 @@ function isTargetCountry(req) {
 }
 
 // ======= Middleware =======
-app.set('trust proxy', false);
+app.set('trust proxy', 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'pages', 'images')));
@@ -388,7 +388,7 @@ app.post('/documents/verify', apiLimiter, (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: Date.now(), uptime: process.uptime() });
+  res.json({ status: 'healthy', timestamp: Date.now() });
 });
 
 // ======= Error handling =======
@@ -400,5 +400,5 @@ app.use((err, req, res, next) => {
 // ======= Start server =======
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  log('info', { event: 'server_started', port: PORT });
+   try { log('info', { event: 'server_started', port: PORT }); } catch {}
 });
