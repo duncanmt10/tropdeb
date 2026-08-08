@@ -230,7 +230,7 @@ function isTargetCountry(req) {
 }
 
 // ======= Middleware =======
-app.set('trust proxy', 1);
+app.set('trust proxy', 2);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'pages', 'images')));
