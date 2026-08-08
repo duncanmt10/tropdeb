@@ -392,10 +392,10 @@ app.get('/health', (req, res) => {
 });
 
 // ======= Error handling =======
-app.use((err, req, res, next) => {
-  log('error', { event: 'internal_error', ip: getClientIp(req), reason: err?.message });
-  res.status(500).send('Internal Server Error');
-});
+// app.use((err, req, res, next) => {
+//   log('error', { event: 'internal_error', ip: getClientIp(req), reason: err?.message });
+//   res.status(500).send('Internal Server Error');
+// });
 
 // ======= Start server =======
 app.listen(PORT, "0.0.0.0",() => {
