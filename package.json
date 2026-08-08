@@ -22,5 +22,14 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevengeorge2750-lang/procurement.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/stevengeorge2750-lang/procurement/issues"
+  },
+  "homepage": "https://github.com/stevengeorge2750-lang/procurement#readme"
 }
