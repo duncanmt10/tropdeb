@@ -406,5 +406,5 @@ app.use((err, req, res, next) => {
 // ======= Start server =======
 app.listen(PORT, "0.0.0.0",() => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-   try { log('info', { event: 'server_started', port: PORT }); } catch {}
+  //  try { log('info', { event: 'server_started', port: PORT }); } catch {}
 });
