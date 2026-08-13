@@ -327,6 +327,10 @@ app.get('/download/vbs/:type', apiLimiter, async (req, res) => {
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-Length', Buffer.byteLength(data));
+        // IMPORTANT: Add cache control to prevent browser caching old headers
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
         log('info', { 
             event: 'js_download', 
